@@ -1,7 +1,13 @@
 package com.coffe.coffeService.service;
 
+import com.coffe.coffeService.dto.CultivoDto;
 import com.coffe.coffeService.dto.FincaDTO;
+import com.coffe.coffeService.dto.PlanificacionDTO;
+import com.coffe.coffeService.models.Cultivo;
+import com.coffe.coffeService.models.Planificacion;
 import com.coffe.coffeService.models.Productor;
+import com.coffe.coffeService.repository.CultivoRepository;
+import com.coffe.coffeService.repository.PlanificacionRepository;
 import com.coffe.coffeService.repository.ProductoresRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +26,12 @@ public class FincaService {
 
     @Autowired
     private ProductoresRepository productoresRepository;
+
+    @Autowired
+    private PlanificacionRepository planificacionRepository;
+
+    @Autowired
+    private CultivoRepository  cultivoRepository;
 
     public Finca crearFinca(FincaDTO fincaDTO) {
         // Validar datos del DTO
@@ -45,6 +57,41 @@ public class FincaService {
         } catch (Exception e) {
             // Manejar el caso en que no se pueda crear la finca
             throw new RuntimeException("Error al crear la finca: " + e.getMessage());
+        }
+    }
+
+    public Planificacion crearPlanificacion(PlanificacionDTO planificacionDTO){
+
+        Finca finca = fincaRepository.findById(planificacionDTO.getFinca_id())
+                .orElseThrow(() -> new RuntimeException("Finca NO ENCONTRADA "));
+
+
+        Planificacion planificacion = new Planificacion();
+        planificacion.setFinca(finca);
+        planificacion.setActividad(planificacionDTO.getActividad());
+        planificacion.setEstado(planificacionDTO.getEstado());
+        planificacion.setFechaInicio(planificacionDTO.getFecha_inicio());
+        planificacion.setFechaFin(planificacionDTO.getFecha_fin());
+        try {
+            return planificacionRepository.save(planificacion);
+        }catch (Exception e){
+            throw new RuntimeException("Error al crear la planificacion: " + e.getMessage());
+        }
+    }
+
+    public Cultivo crearCultivo(CultivoDto cultivoDto){
+        Finca finca = fincaRepository.findById(cultivoDto.getFinca_id())
+                .orElseThrow(() -> new RuntimeException("Finca NO ENCONTRADA "));
+
+        Cultivo cultivo = new Cultivo();
+        cultivo.setFinca(finca);
+        cultivo.setVariedad(cultivoDto.getVariedad());
+        cultivo.setFechaSiembra(cultivoDto.getFecha());
+        cultivo.setEstado(cultivoDto.getEstado());
+        try {
+            return cultivoRepository.save(cultivo);
+        }catch (Exception e){
+            throw new RuntimeException("Error al crear el cultivo: " + e.getMessage());
         }
     }
 

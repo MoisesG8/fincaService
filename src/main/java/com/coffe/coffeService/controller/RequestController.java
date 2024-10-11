@@ -1,8 +1,12 @@
 package com.coffe.coffeService.controller;
 
+import com.coffe.coffeService.dto.CultivoDto;
 import com.coffe.coffeService.dto.FincaDTO;
+import com.coffe.coffeService.dto.PlanificacionDTO;
 import com.coffe.coffeService.dto.ProductoresFincas;
+import com.coffe.coffeService.models.Cultivo;
 import com.coffe.coffeService.models.Finca;
+import com.coffe.coffeService.models.Planificacion;
 import com.coffe.coffeService.models.Productor;
 import com.coffe.coffeService.service.FincaService;
 import com.coffe.coffeService.service.ProductoreService;
@@ -81,6 +85,18 @@ public class RequestController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la finca.");
         }
+    }
+
+    @PostMapping("/addPlanificacion")
+    public ResponseEntity<?> agregarPlanificacion(@RequestBody PlanificacionDTO planificacionDTO) {
+            Planificacion nuevaPlanificacion = fincaService.crearPlanificacion(planificacionDTO);
+            return ResponseEntity.ok("Planificacion creada con exito: "+nuevaPlanificacion.getActividad());
+    }
+
+    @PostMapping("/addCultivo")
+    public ResponseEntity<?> agregarCultivo(@RequestBody CultivoDto cultivoDto){
+        Cultivo cultivo =  fincaService.crearCultivo(cultivoDto);
+        return ResponseEntity.ok("Cultivo agregado con exito "+ cultivo.getVariedad());
     }
 
 }
