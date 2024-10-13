@@ -1,9 +1,6 @@
 package com.coffe.coffeService.service;
 
-import com.coffe.coffeService.dto.CultivoDto;
-import com.coffe.coffeService.dto.FincaDTO;
-import com.coffe.coffeService.dto.InventarioDTO;
-import com.coffe.coffeService.dto.PlanificacionDTO;
+import com.coffe.coffeService.dto.*;
 import com.coffe.coffeService.models.*;
 import com.coffe.coffeService.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +28,11 @@ public class FincaService {
 
     @Autowired
     private CultivoRepository  cultivoRepository;
+
+    @Autowired
+    private SeguimientoRepository secuimientoRepository;
+    @Autowired
+    private SeguimientoRepository seguimientoRepository;
 
     public Finca crearFinca(FincaDTO fincaDTO) {
         // Validar datos del DTO
@@ -100,7 +102,7 @@ public class FincaService {
 
         Inventario inventario = new Inventario();
         inventario.setFinca(finca);
-        inventario.setCantidad(new BigDecimal(inventarioDTO.getCantidad()));
+        inventario.setCantidad(inventarioDTO.getCantidad());
         inventario.setProducto(inventarioDTO.getProducto());
         inventario.setUnidad(inventarioDTO.getUnidad());
         inventario.setFechaRegistro(inventarioDTO.getFecha_registro());
@@ -108,7 +110,25 @@ public class FincaService {
         try {
             return inventarioRepository.save(inventario);
         }catch (Exception e){
-            throw new RuntimeException("Error al crear el cultivo: " + e.getMessage());
+            throw new RuntimeException("Error al crear el inventario: " + e.getMessage());
+        }
+    }
+
+    public Seguimiento crearSeguimiento(SeguimientoDTO seguimientoDTO){
+
+        Planificacion planificacion = planificacionRepository.findById(seguimientoDTO.getPlanificacion_id())
+                .orElseThrow(() -> new RuntimeException("Planificacion NO ENCONTRADA "));
+
+        Seguimiento seguimiento = new Seguimiento();
+        seguimiento.setPlanificacion(planificacion);
+        seguimiento.setFecha(seguimientoDTO.getFecha());
+        seguimiento.setObservaciones(seguimientoDTO.getObservaciones());
+        seguimiento.setActividadRealizada(seguimientoDTO.getActividad_realizada());
+
+        try {
+            return seguimientoRepository.save(seguimiento);
+        }catch (Exception e){
+            throw new RuntimeException("Error al crear el seguimiento: " + e.getMessage());
         }
     }
 

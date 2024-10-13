@@ -99,10 +99,26 @@ public class RequestController {
         return ResponseEntity.ok("Inventario creado con exito");
     }
 
+    @PostMapping("/addSeguimiento")
+    public ResponseEntity<?> agregarSeguimiento(@RequestBody SeguimientoDTO seguimientoDTO){
+        Seguimiento seguimiento = fincaService.crearSeguimiento(seguimientoDTO);
+        return ResponseEntity.ok("Seguimiento creado con exito");
+    }
+
     @GetMapping("/getFincasDeProductor/{id}")
     public ResponseEntity<?> obtenerFincasDeProductor(@PathVariable Long id){
         List<Finca> fincas = fincaService.getFincasProductor(id);
         return ResponseEntity.ok(fincas);
+    }
+
+    @PutMapping("/actualizarProductor/{id}")
+    public ResponseEntity<Productor> actualizarProductor(
+            @PathVariable Long id,
+            @RequestBody ProductorDTO productorDTO) {
+
+       Productor productorUpdate = productoreService.actualizarProductor(id, productorDTO);
+       productorDTO.setPassword(null);
+       return ResponseEntity.ok(productorUpdate);
     }
 
 }

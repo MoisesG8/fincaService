@@ -1,6 +1,7 @@
 package com.coffe.coffeService.service;
 
 import com.coffe.coffeService.dto.LoginResponse;
+import com.coffe.coffeService.dto.ProductorDTO;
 import com.coffe.coffeService.dto.ProductorResponse;
 import com.coffe.coffeService.dto.ProductoresFincas;
 import com.coffe.coffeService.models.Productor;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.ErrorResponseException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,6 +50,24 @@ public class ProductoreService {
 
     public Productor getProductorById(Long id) {
         return productoresRepository.findById(id).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
+    }
+
+    public Productor actualizarProductor(Long idProductor, ProductorDTO productorDTO) {
+        // Verificamos si existe el productor
+        Productor productor = productoresRepository.findById(idProductor)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        // Actualizamos los campos
+        productor.setNombre(productorDTO.getNombre());
+        productor.setApellido(productorDTO.getApellido());
+        productor.setUsuario(productorDTO.getUsuario());
+        productor.setEmail(productorDTO.getEmail());
+        productor.setUbicacion(productorDTO.getUbicacion());
+        productor.setContacto(productorDTO.getContacto());
+        productor.setActualizadoEn(LocalDateTime.now());
+
+        // Guardamos los cambios
+        return productoresRepository.save(productor);
     }
 
     public LoginResponse login(String email, String password) {
