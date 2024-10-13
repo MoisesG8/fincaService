@@ -72,7 +72,7 @@ public class ProductoreService {
 
     public LoginResponse login(String email, String password) {
         LoginResponse loginResponse = new LoginResponse();
-        Optional<Productor> usuario = productoresRepository.findByEmail(email);
+        Optional<Productor> usuario = productoresRepository.findByEmailAndPassword(email, password);
         if (usuario.isPresent()) {
             Productor productor = usuario.get();
             if (productor.getPassword().equals(password)) {

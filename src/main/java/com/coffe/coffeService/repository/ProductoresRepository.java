@@ -14,5 +14,5 @@ public interface ProductoresRepository extends JpaRepository<Productor, Long> {
     List<ProductoresFincas> findProductoresWithFincas();
 
 
-    Optional<Productor> findByEmail(String email);
+    Optional<Productor> findByEmailAndPassword(String email, String password);
 }
