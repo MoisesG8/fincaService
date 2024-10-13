@@ -2,20 +2,16 @@ package com.coffe.coffeService.service;
 
 import com.coffe.coffeService.dto.CultivoDto;
 import com.coffe.coffeService.dto.FincaDTO;
+import com.coffe.coffeService.dto.InventarioDTO;
 import com.coffe.coffeService.dto.PlanificacionDTO;
-import com.coffe.coffeService.models.Cultivo;
-import com.coffe.coffeService.models.Planificacion;
-import com.coffe.coffeService.models.Productor;
-import com.coffe.coffeService.repository.CultivoRepository;
-import com.coffe.coffeService.repository.PlanificacionRepository;
-import com.coffe.coffeService.repository.ProductoresRepository;
+import com.coffe.coffeService.models.*;
+import com.coffe.coffeService.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.coffe.coffeService.models.Finca;
-import com.coffe.coffeService.repository.FincaRepository;
-
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,6 +25,9 @@ public class FincaService {
 
     @Autowired
     private PlanificacionRepository planificacionRepository;
+
+    @Autowired
+    private InventarioRepository inventarioRepository;
 
     @Autowired
     private CultivoRepository  cultivoRepository;
@@ -95,6 +94,24 @@ public class FincaService {
         }
     }
 
+    public Inventario crearInventario(InventarioDTO inventarioDTO){
+        Finca finca = fincaRepository.findById(inventarioDTO.getFinca_id())
+                .orElseThrow(() -> new RuntimeException("Finca NO ENCONTRADA "));
+
+        Inventario inventario = new Inventario();
+        inventario.setFinca(finca);
+        inventario.setCantidad(new BigDecimal(inventarioDTO.getCantidad()));
+        inventario.setProducto(inventarioDTO.getProducto());
+        inventario.setUnidad(inventarioDTO.getUnidad());
+        inventario.setFechaRegistro(inventarioDTO.getFecha_registro());
+
+        try {
+            return inventarioRepository.save(inventario);
+        }catch (Exception e){
+            throw new RuntimeException("Error al crear el cultivo: " + e.getMessage());
+        }
+    }
+
     public Finca getFincaById(Long id) {
         if (fincaRepository.existsById(id)) {
             return fincaRepository.findById(id).get();
@@ -112,6 +129,14 @@ public class FincaService {
         } else {
             return false;
         }
+    }
+
+    public List<Finca> getFincasProductor(Long productorID){
+        // Buscar el productor por ID
+        Productor productor = productoresRepository.findById(productorID)
+                .orElseThrow(() -> new RuntimeException("Productor no encontrado"));
+
+        return fincaRepository.findByProductor(productor);
     }
 
 }
