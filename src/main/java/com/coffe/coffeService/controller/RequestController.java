@@ -6,12 +6,14 @@ import com.coffe.coffeService.service.FincaService;
 import com.coffe.coffeService.service.ProductoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping("/api/v1")
 public class RequestController {
     @Autowired
@@ -20,19 +22,20 @@ public class RequestController {
     @Autowired
     private FincaService fincaService;
 
-    @GetMapping("/getAllProductores")
+    @GetMapping(value = "/getAllProductores", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Productor>> getAllProductores(){
         List<Productor> productores = productoreService.getAllProductores();
         return ResponseEntity.ok(productores);
     }
 
-    @PostMapping("/addProductor")
+   // @PostMapping("/addProductor")
+    @PostMapping(value = "/addProductor", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Productor> addProductor(@RequestBody Productor productor) {
         try {
             Productor newProductor = productoreService.saveProductor(productor);
             return new ResponseEntity<>(newProductor, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new Productor(), HttpStatus.ACCEPTED);
         }
     }
 
