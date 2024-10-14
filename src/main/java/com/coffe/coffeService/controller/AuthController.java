@@ -8,13 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping("/api/auth")
 public class AuthController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
@@ -22,18 +23,19 @@ public class AuthController {
     @Autowired
     ProductoreService productoreService;
 
-    @PostMapping("/login")
+
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         try {
             LoginResponse respuesta = productoreService.login(loginDTO.getEmail(), loginDTO.getPassword());
             if (respuesta != null) {
                 return ResponseEntity.ok(respuesta);
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas.");
+                return  ResponseEntity.ok(new LoginResponse());
             }
         } catch (Exception e) {
             LOGGER.error("ERROR ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error durante el inicio de sesión.");
+             return  ResponseEntity.ok(new LoginResponse());
         }
     }
 }
