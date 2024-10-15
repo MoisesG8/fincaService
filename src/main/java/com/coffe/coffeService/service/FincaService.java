@@ -27,7 +27,7 @@ public class FincaService {
     private InventarioRepository inventarioRepository;
 
     @Autowired
-    private CultivoRepository  cultivoRepository;
+    private CultivoRepository cultivoRepository;
 
     @Autowired
     private SeguimientoRepository secuimientoRepository;
@@ -61,11 +61,10 @@ public class FincaService {
         }
     }
 
-    public Planificacion crearPlanificacion(PlanificacionDTO planificacionDTO){
+    public Planificacion crearPlanificacion(PlanificacionDTO planificacionDTO) {
 
         Finca finca = fincaRepository.findById(planificacionDTO.getFinca_id())
                 .orElseThrow(() -> new RuntimeException("Finca NO ENCONTRADA "));
-
 
         Planificacion planificacion = new Planificacion();
         planificacion.setFinca(finca);
@@ -75,12 +74,12 @@ public class FincaService {
         planificacion.setFechaFin(planificacionDTO.getFecha_fin());
         try {
             return planificacionRepository.save(planificacion);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Error al crear la planificacion: " + e.getMessage());
         }
     }
 
-    public Cultivo crearCultivo(CultivoDto cultivoDto){
+    public Cultivo crearCultivo(CultivoDto cultivoDto) {
         Finca finca = fincaRepository.findById(cultivoDto.getFinca_id())
                 .orElseThrow(() -> new RuntimeException("Finca NO ENCONTRADA "));
 
@@ -91,12 +90,12 @@ public class FincaService {
         cultivo.setEstado(cultivoDto.getEstado());
         try {
             return cultivoRepository.save(cultivo);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Error al crear el cultivo: " + e.getMessage());
         }
     }
 
-    public Inventario crearInventario(InventarioDTO inventarioDTO){
+    public Inventario crearInventario(InventarioDTO inventarioDTO) {
         Finca finca = fincaRepository.findById(inventarioDTO.getFinca_id())
                 .orElseThrow(() -> new RuntimeException("Finca NO ENCONTRADA "));
 
@@ -109,12 +108,12 @@ public class FincaService {
 
         try {
             return inventarioRepository.save(inventario);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Error al crear el inventario: " + e.getMessage());
         }
     }
 
-    public Seguimiento crearSeguimiento(SeguimientoDTO seguimientoDTO){
+    public Seguimiento crearSeguimiento(SeguimientoDTO seguimientoDTO) {
 
         Planificacion planificacion = planificacionRepository.findById(seguimientoDTO.getPlanificacion_id())
                 .orElseThrow(() -> new RuntimeException("Planificacion NO ENCONTRADA "));
@@ -127,7 +126,7 @@ public class FincaService {
 
         try {
             return seguimientoRepository.save(seguimiento);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Error al crear el seguimiento: " + e.getMessage());
         }
     }
@@ -151,7 +150,7 @@ public class FincaService {
         }
     }
 
-    public List<Finca> getFincasProductor(Long productorID){
+    public List<Finca> getFincasProductor(Long productorID) {
         // Buscar el productor por ID
         Productor productor = productoresRepository.findById(productorID)
                 .orElseThrow(() -> new RuntimeException("Productor no encontrado"));
@@ -159,4 +158,7 @@ public class FincaService {
         return fincaRepository.findByProductor(productor);
     }
 
+    public List<Finca> getAllFincas() {
+        return fincaRepository.findAll();
+    }
 }
