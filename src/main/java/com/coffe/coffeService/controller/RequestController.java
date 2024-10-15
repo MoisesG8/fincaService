@@ -4,6 +4,8 @@ import com.coffe.coffeService.dto.*;
 import com.coffe.coffeService.models.*;
 import com.coffe.coffeService.service.FincaService;
 import com.coffe.coffeService.service.ProductoreService;
+
+import java.util.Collections;
 import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,7 +63,13 @@ public class RequestController {
 
     @GetMapping("/getFinca/{id}")
     public ResponseEntity<Finca> getFincaById(@PathVariable Long id) {
-        return ResponseEntity.ok(fincaService.getFincaById(id));
+        Finca fincaById = fincaService.getFincaById(id);
+        if(fincaById!=null){
+            return ResponseEntity.ok(fincaById);
+        }else{
+            return ResponseEntity.ok(new Finca());
+        }
+
     }
 
     @PostMapping("/addFinca")
@@ -74,6 +82,20 @@ public class RequestController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("estado", "error");
+            return ResponseEntity.ok(response);
+        }
+
+    }
+
+    @PostMapping(value = "/editFinca", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map> EditFincaById(@RequestBody Map fincaAActualizar) {
+        Map<String, Object> response = new HashMap<>();
+        boolean respuesta = fincaService.editarFinca(fincaAActualizar);
+        if(respuesta){
+            response.put("estado","exito");
+            return ResponseEntity.ok(response);
+        }else{
+            response.put("estado","error");
             return ResponseEntity.ok(response);
         }
 
@@ -108,8 +130,15 @@ public class RequestController {
 
     @PostMapping("/addCultivo")
     public ResponseEntity<?> agregarCultivo(@RequestBody CultivoDto cultivoDto) {
-        Cultivo cultivo = fincaService.crearCultivo(cultivoDto);
-        return ResponseEntity.ok("Cultivo agregado con exito " + cultivo.getVariedad());
+        Map<String, String> response = new HashMap<>();
+        try {
+            Cultivo cultivo = fincaService.crearCultivo(cultivoDto);
+            response.put("estado", "exito");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("estado", "error");
+            return ResponseEntity.ok(response);
+        }
     }
 
     @PostMapping("/addInventario")
@@ -146,4 +175,34 @@ public class RequestController {
         return ResponseEntity.ok(fincas);
     }
 
+    @GetMapping("/getCultivosXFinca/{fincaId}")
+    public ResponseEntity<List<Cultivo>> obtenerCultivosPorFinca(@PathVariable Long fincaId) {
+        try {
+            List<Cultivo> cultivos = fincaService.obtenerCultivosPorFinca(fincaId);
+            return ResponseEntity.ok(cultivos);
+        } catch (Exception e) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+    }
+
+    @DeleteMapping("/deleteCultivo/{id}")
+    public ResponseEntity<Object> eliminarCultivo(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            boolean isDeleted = fincaService.eliminarCultivo(id);
+            if (isDeleted) {
+                response.put("estado", "exito");
+                response.put("mensaje", "Cultivo eliminado exitosamente");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("estado", "error");
+                response.put("mensaje", "Cultivo no encontrada");
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            response.put("estado", "error");
+            response.put("mensaje", "error al eliminar el cultivo");
+            return ResponseEntity.ok(response);
+        }
+    }
 }

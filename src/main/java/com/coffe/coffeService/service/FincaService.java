@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -46,6 +47,7 @@ public class FincaService {
 
         // Crear una nueva instancia de Finca
         Finca nuevaFinca = new Finca();
+
         nuevaFinca.setNombre(fincaDTO.getNombre());
         nuevaFinca.setUbicacion(fincaDTO.getUbicacion());
         nuevaFinca.setTamanioHectareas(fincaDTO.getTamanioHectareas());
@@ -135,7 +137,7 @@ public class FincaService {
         if (fincaRepository.existsById(id)) {
             return fincaRepository.findById(id).get();
         } else {
-            throw new RuntimeException("La finca no existe");
+            return null;
         }
 
     }
@@ -160,5 +162,39 @@ public class FincaService {
 
     public List<Finca> getAllFincas() {
         return fincaRepository.findAll();
+    }
+
+    public boolean editarFinca(Map _fincaActualizada) {
+        try {
+            Productor productor = productoresRepository.findById(Long.parseLong(""+_fincaActualizada.get("productorid")))
+                    .orElseThrow(() -> new RuntimeException("Productor no encontrado"));
+            Finca nuevaFinca = new Finca();
+
+            nuevaFinca.setFincaId(Long.parseLong(""+_fincaActualizada.get("fincaId")));
+            nuevaFinca.setNombre(""+_fincaActualizada.get("nombre"));
+            nuevaFinca.setUbicacion(""+_fincaActualizada.get("ubicacion"));
+            nuevaFinca.setTamanioHectareas(new BigDecimal(""+_fincaActualizada.get("tamanioHectareas")));
+            nuevaFinca.setFechaRegistro(LocalDate.now());
+            nuevaFinca.setProductor(productor);
+
+            fincaRepository.save(nuevaFinca);
+            return true; // Guardar
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public List<Cultivo> obtenerCultivosPorFinca(Long fincaId) {
+        return cultivoRepository.findCultivosWithFincas(fincaId);
+    }
+
+    public boolean eliminarCultivo(Long id) {
+        Optional<Cultivo> cultivoOptional = cultivoRepository.findById(id);
+        if (cultivoOptional.isPresent()) {
+            cultivoRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
