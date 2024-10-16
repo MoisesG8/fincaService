@@ -124,8 +124,15 @@ public class RequestController {
 
     @PostMapping("/addPlanificacion")
     public ResponseEntity<?> agregarPlanificacion(@RequestBody PlanificacionDTO planificacionDTO) {
-        Planificacion nuevaPlanificacion = fincaService.crearPlanificacion(planificacionDTO);
-        return ResponseEntity.ok("Planificacion creada con exito: " + nuevaPlanificacion.getActividad());
+        Map<String, String> response = new HashMap<>();
+        try {
+            Planificacion nuevaPlanificacion = fincaService.crearPlanificacion(planificacionDTO);
+            response.put("estado", "exito");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("estado", "error");
+            return ResponseEntity.ok(response);
+        }
     }
 
     @PostMapping("/addCultivo")
@@ -143,9 +150,48 @@ public class RequestController {
 
     @PostMapping("/addInventario")
     public ResponseEntity<?> agregarInventario(@RequestBody InventarioDTO inventarioDTO) {
-        Inventario inventario = fincaService.crearInventario(inventarioDTO);
-        return ResponseEntity.ok("Inventario creado con exito");
+        Map<String, String> response = new HashMap<>();
+        try {
+            Inventario inventario = fincaService.crearInventario(inventarioDTO);
+            response.put("estado", "exito");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("estado", "error");
+            return ResponseEntity.ok(response);
+        }
     }
+
+    @GetMapping("/getInventarioXFinca/{fincaId}")
+    public ResponseEntity<List<Inventario>> getInventarioXFinca(@PathVariable Long fincaId) {
+        try {
+            List<Inventario> Inventario = fincaService.obtenerInventarioPorFinca(fincaId);
+            return ResponseEntity.ok(Inventario);
+        } catch (Exception e) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+    }
+
+    @DeleteMapping("/deleteInventario/{id}")
+    public ResponseEntity<Object> deleteInventario(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            boolean isDeleted = fincaService.eliminarInventario(id);
+            if (isDeleted) {
+                response.put("estado", "exito");
+                response.put("mensaje", "Inventario eliminado exitosamente");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("estado", "error");
+                response.put("mensaje", "Inventario no encontrada");
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            response.put("estado", "error");
+            response.put("mensaje", "error al eliminar el inventario");
+            return ResponseEntity.ok(response);
+        }
+    }
+
 
     @PostMapping("/addSeguimiento")
     public ResponseEntity<?> agregarSeguimiento(@RequestBody SeguimientoDTO seguimientoDTO) {
@@ -211,5 +257,38 @@ public class RequestController {
         List<SeguimientoPlanificacionDTO> seguimientos = fincaService.obtenerSeguimientosPorFinca(fincaId);
         return ResponseEntity.ok(seguimientos);
     }
+
+
+    @GetMapping("/getPlanificacionXFinca/{fincaId}")
+    public ResponseEntity<List<Planificacion>> getPlanificacionXFinca(@PathVariable Long fincaId) {
+        try {
+            List<Planificacion> planificacion = fincaService.obtenerPlanificacionPorFinca(fincaId);
+            return ResponseEntity.ok(planificacion);
+        } catch (Exception e) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+    }
+
+    @DeleteMapping("/deletePlanificacion/{id}")
+    public ResponseEntity<Object> deletePlanificacion(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            boolean isDeleted = fincaService.eliminarPlanificacion(id);
+            if (isDeleted) {
+                response.put("estado", "exito");
+                response.put("mensaje", "Planificacion eliminada exitosamente");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("estado", "error");
+                response.put("mensaje", "Planificacion no encontrada");
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            response.put("estado", "error");
+            response.put("mensaje", "error al eliminar la planificacion");
+            return ResponseEntity.ok(response);
+        }
+    }
+
 
 }

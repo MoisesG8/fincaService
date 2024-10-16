@@ -104,7 +104,7 @@ public class FincaService {
         inventario.setCantidad(inventarioDTO.getCantidad());
         inventario.setProducto(inventarioDTO.getProducto());
         inventario.setUnidad(inventarioDTO.getUnidad());
-        inventario.setFechaRegistro(inventarioDTO.getFecha_registro());
+        inventario.setFechaRegistro(LocalDate.now());
 
         try {
             return inventarioRepository.save(inventario);
@@ -186,10 +186,38 @@ public class FincaService {
         return cultivoRepository.findCultivosWithFincas(fincaId);
     }
 
+    public List<Inventario> obtenerInventarioPorFinca(Long fincaId) {
+        return inventarioRepository.findInventarioWithFincas(fincaId);
+    }
+
+    public List<Planificacion> obtenerPlanificacionPorFinca(Long fincaId) {
+        return planificacionRepository.findPlanificacionWithFincas(fincaId);
+    }
+
     public boolean eliminarCultivo(Long id) {
         Optional<Cultivo> cultivoOptional = cultivoRepository.findById(id);
         if (cultivoOptional.isPresent()) {
             cultivoRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean eliminarInventario(Long id) {
+        Optional<Inventario> inventarioOptional = inventarioRepository.findById(id);
+        if (inventarioOptional.isPresent()) {
+            inventarioRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean eliminarPlanificacion(Long id) {
+        Optional<Planificacion> planificacionOptional = planificacionRepository.findById(id);
+        if (planificacionOptional.isPresent()) {
+            planificacionRepository.deleteById(id);
             return true;
         } else {
             return false;
