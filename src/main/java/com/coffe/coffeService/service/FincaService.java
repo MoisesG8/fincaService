@@ -31,8 +31,6 @@ public class FincaService {
     private CultivoRepository cultivoRepository;
 
     @Autowired
-    private SeguimientoRepository secuimientoRepository;
-    @Autowired
     private SeguimientoRepository seguimientoRepository;
 
     public Finca crearFinca(FincaDTO fincaDTO) {
@@ -196,5 +194,13 @@ public class FincaService {
         } else {
             return false;
         }
+    }
+
+    public List<SeguimientoPlanificacionDTO> obtenerSeguimientosPorFinca(Long fincaId) {
+
+        Finca finca = fincaRepository.findById(fincaId)
+                .orElseThrow(() -> new RuntimeException("Finca NO ENCONTRADA "));
+
+        return seguimientoRepository.findSeguimientosByFincaId(fincaId);
     }
 }

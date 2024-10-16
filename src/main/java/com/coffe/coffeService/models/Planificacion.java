@@ -1,11 +1,13 @@
 package com.coffe.coffeService.models;
 
+import com.coffe.coffeService.dto.PlanificacionDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity
@@ -34,4 +36,7 @@ public class Planificacion {
 
     @Column(name = "estado", length = 50)
     private String estado;
+
+    @OneToMany(mappedBy = "planificacion", fetch = FetchType.LAZY)
+    private List<Seguimiento> seguimientos;
 }

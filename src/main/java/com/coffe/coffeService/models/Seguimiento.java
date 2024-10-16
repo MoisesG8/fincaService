@@ -1,5 +1,7 @@
 package com.coffe.coffeService.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +21,7 @@ public class Seguimiento {
     @Column(name = "seguimiento_id")
     private Long seguimientoId;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "planificacion_id", nullable = false)
     private Planificacion planificacion;

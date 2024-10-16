@@ -205,4 +205,11 @@ public class RequestController {
             return ResponseEntity.ok(response);
         }
     }
+
+    @GetMapping("/obtenerSeguimientosPorFinca/{fincaId}")
+    public ResponseEntity<?> obtenerSeguimientosPorFinca(@PathVariable Long fincaId) {
+        List<SeguimientoPlanificacionDTO> seguimientos = fincaService.obtenerSeguimientosPorFinca(fincaId);
+        return ResponseEntity.ok(seguimientos);
+    }
+
 }
