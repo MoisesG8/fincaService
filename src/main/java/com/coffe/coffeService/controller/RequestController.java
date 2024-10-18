@@ -188,8 +188,15 @@ public class RequestController {
 
     @PostMapping("/addSeguimiento")
     public ResponseEntity<?> agregarSeguimiento(@RequestBody SeguimientoDTO seguimientoDTO) {
-        Seguimiento seguimiento = fincaService.crearSeguimiento(seguimientoDTO);
-        return ResponseEntity.ok("Seguimiento creado con exito");
+        Map<String, String> response = new HashMap<>();
+        try {
+            Seguimiento seguimiento = fincaService.crearSeguimiento(seguimientoDTO);
+            response.put("estado", "exito");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("estado", "error");
+            return ResponseEntity.ok(response);
+        }
     }
 
     @GetMapping("/getFincasDeProductor/{id}")
@@ -302,4 +309,35 @@ public class RequestController {
         }
     }
 
+
+    @GetMapping("/getSeguimientoXPlanificacion/{idPlanificacion}")
+    public ResponseEntity<List<Seguimiento>> getSeguimientoXPlanificacion(@PathVariable Long idPlanificacion) {
+        try {
+            List<Seguimiento> Seguimiento = fincaService.getSeguimientoXPlanificacion(idPlanificacion);
+            return ResponseEntity.ok(Seguimiento);
+        } catch (Exception e) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+    }
+
+    @DeleteMapping("/deleteSeguimiento/{id}")
+    public ResponseEntity<Object> deleteSeguimiento(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            boolean isDeleted = fincaService.deleteSeguimiento(id);
+            if (isDeleted) {
+                response.put("estado", "exito");
+                response.put("mensaje", "Seguimiento eliminado exitosamente");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("estado", "error");
+                response.put("mensaje", "Seguimiento no encontrado");
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            response.put("estado", "error");
+            response.put("mensaje", "error al eliminar el seguimiento");
+            return ResponseEntity.ok(response);
+        }
+    }
 }

@@ -14,4 +14,7 @@ public interface SeguimientoRepository extends JpaRepository<Seguimiento, Long> 
             "FROM Seguimiento s INNER JOIN s.planificacion p " +
             "WHERE p.finca.fincaId = :fincaId")
     List<SeguimientoPlanificacionDTO> findSeguimientosByFincaId(@Param("fincaId") Long fincaId);
+
+    @Query("SELECT s FROM Seguimiento s WHERE s.planificacion.id = :planificacionId")
+    List<Seguimiento> findSeguimientoWithPlanificacion(@Param("planificacionId") Long planificacionId);
 }

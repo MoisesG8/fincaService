@@ -1,13 +1,11 @@
 package com.coffe.coffeService.service;
 
-import com.coffe.coffeService.controller.RequestController;
 import com.coffe.coffeService.dto.*;
 import com.coffe.coffeService.models.*;
 import com.coffe.coffeService.repository.*;
 import com.coffe.coffeService.utilerias.ExcelCoffe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.LoggerFactoryFriend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -261,5 +259,19 @@ public class FincaService {
         LOGGER.info("nombre Productor {}", nombreProductor);
         byte [] excelBytes = excelCoffe.generarExcel(seguimientos, nombrePlanificacion, nombreFinca, nombreProductor);
         return excelBytes;
+    }
+
+    public List<Seguimiento> getSeguimientoXPlanificacion(Long planificacionID) {
+        return seguimientoRepository.findSeguimientoWithPlanificacion(planificacionID);
+    }
+
+    public boolean deleteSeguimiento(Long id) {
+        Optional<Seguimiento> seguimientoOptional = seguimientoRepository.findById(id);
+        if (seguimientoOptional.isPresent()) {
+            seguimientoRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
