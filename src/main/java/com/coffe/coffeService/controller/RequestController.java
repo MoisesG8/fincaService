@@ -154,6 +154,38 @@ public class RequestController {
         return ResponseEntity.ok("Inventario creado con exito");
     }
 
+    @GetMapping("/getInventarioXFinca/{fincaId}")
+    public ResponseEntity<List<Inventario>> getInventarioXFinca(@PathVariable Long fincaId) {
+        try {
+            List<Inventario> Inventario = fincaService.obtenerInventarioPorFinca(fincaId);
+            return ResponseEntity.ok(Inventario);
+        } catch (Exception e) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+    }
+
+    @DeleteMapping("/deleteInventario/{id}")
+    public ResponseEntity<Object> deleteInventario(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            boolean isDeleted = fincaService.eliminarInventario(id);
+            if (isDeleted) {
+                response.put("estado", "exito");
+                response.put("mensaje", "Inventario eliminado exitosamente");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("estado", "error");
+                response.put("mensaje", "Inventario no encontrada");
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            response.put("estado", "error");
+            response.put("mensaje", "error al eliminar el inventario");
+            return ResponseEntity.ok(response);
+        }
+    }
+
+
     @PostMapping("/addSeguimiento")
     public ResponseEntity<?> agregarSeguimiento(@RequestBody SeguimientoDTO seguimientoDTO) {
         Seguimiento seguimiento = fincaService.crearSeguimiento(seguimientoDTO);
@@ -236,6 +268,37 @@ public class RequestController {
                     .body(excelBytes);
         } else {
             return new ResponseEntity<>("No existen planificaciones para la Finca", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getPlanificacionXFinca/{fincaId}")
+    public ResponseEntity<List<Planificacion>> getPlanificacionXFinca(@PathVariable Long fincaId) {
+        try {
+            List<Planificacion> planificacion = fincaService.obtenerPlanificacionPorFinca(fincaId);
+            return ResponseEntity.ok(planificacion);
+        } catch (Exception e) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+    }
+
+    @DeleteMapping("/deletePlanificacion/{id}")
+    public ResponseEntity<Object> deletePlanificacion(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            boolean isDeleted = fincaService.eliminarPlanificacion(id);
+            if (isDeleted) {
+                response.put("estado", "exito");
+                response.put("mensaje", "Planificacion eliminada exitosamente");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("estado", "error");
+                response.put("mensaje", "Planificacion no encontrada");
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            response.put("estado", "error");
+            response.put("mensaje", "error al eliminar la planificacion");
+            return ResponseEntity.ok(response);
         }
     }
 
