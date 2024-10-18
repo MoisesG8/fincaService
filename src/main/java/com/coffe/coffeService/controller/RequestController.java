@@ -5,9 +5,14 @@ import com.coffe.coffeService.models.*;
 import com.coffe.coffeService.service.FincaService;
 import com.coffe.coffeService.service.ProductoreService;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +25,8 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping("/api/v1")
 public class RequestController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestController.class);
 
     @Autowired
     private ProductoreService productoreService;
@@ -210,6 +217,26 @@ public class RequestController {
     public ResponseEntity<?> obtenerSeguimientosPorFinca(@PathVariable Long fincaId) {
         List<SeguimientoPlanificacionDTO> seguimientos = fincaService.obtenerSeguimientosPorFinca(fincaId);
         return ResponseEntity.ok(seguimientos);
+    }
+
+    @PostMapping("/generarExcel")
+    public ResponseEntity<?> downloadExcel(@RequestBody Map<String, Object> parametros) throws IOException {
+
+        byte[] excelBytes = fincaService.generarExcelTest(parametros);
+        if(excelBytes != null) {
+            // Configurar los encabezados de la respuesta HTTP
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+            headers.setContentDispositionFormData("attachment", "data.xlsx");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            // Devolver la respuesta con el archivo Excel
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(excelBytes);
+        } else {
+            return new ResponseEntity<>("No existen planificaciones para la Finca", HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

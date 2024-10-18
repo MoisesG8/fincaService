@@ -15,4 +15,7 @@ public interface ProductoresRepository extends JpaRepository<Productor, Long> {
 
 
     Optional<Productor> findByEmailAndPassword(String email, String password);
+
+    @Query("SELECT p.nombre FROM Productor p WHERE p.id = :id")
+    String findProductorById(Long id);
 }

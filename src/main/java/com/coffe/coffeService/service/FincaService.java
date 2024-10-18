@@ -1,11 +1,17 @@
 package com.coffe.coffeService.service;
 
+import com.coffe.coffeService.controller.RequestController;
 import com.coffe.coffeService.dto.*;
 import com.coffe.coffeService.models.*;
 import com.coffe.coffeService.repository.*;
+import com.coffe.coffeService.utilerias.ExcelCoffe;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactoryFriend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -14,6 +20,8 @@ import java.util.Optional;
 
 @Service
 public class FincaService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FincaService.class);
 
     @Autowired
     private FincaRepository fincaRepository;
@@ -32,6 +40,9 @@ public class FincaService {
 
     @Autowired
     private SeguimientoRepository seguimientoRepository;
+
+    @Autowired
+    private ExcelCoffe excelCoffe;
 
     public Finca crearFinca(FincaDTO fincaDTO) {
         // Validar datos del DTO
@@ -202,5 +213,25 @@ public class FincaService {
                 .orElseThrow(() -> new RuntimeException("Finca NO ENCONTRADA "));
 
         return seguimientoRepository.findSeguimientosByFincaId(fincaId);
+    }
+
+    public byte[] generarExcelTest(Map<String, Object> parametros) throws IOException {
+        Integer idFincaInt = (Integer) parametros.get("idFinca");
+        Long idFinca = idFincaInt != null ? idFincaInt.longValue() : null;
+        Integer idProductorInt = (Integer) parametros.get("idProductor");
+        Long idProductor = idProductorInt != null ? idProductorInt.longValue() : null;
+        List<SeguimientoPlanificacionDTO> seguimientos = seguimientoRepository.findSeguimientosByFincaId(idFinca);
+        if (seguimientos.isEmpty()){
+            LOGGER.info("vacio");
+            return null;
+        }
+        String nombrePlanificacion = planificacionRepository.findActividadByPlanificacionId(seguimientos.get(0).getPlanificacionId());
+        String nombreFinca = fincaRepository.findFincaByFincaId(idFinca);
+        String nombreProductor = productoresRepository.findProductorById(idProductor);
+        LOGGER.info("nombre planificacion {}", nombrePlanificacion);
+        LOGGER.info("nombre finca {}", nombreFinca);
+        LOGGER.info("nombre Productor {}", nombreProductor);
+        byte [] excelBytes = excelCoffe.generarExcel(seguimientos, nombrePlanificacion, nombreFinca, nombreProductor);
+        return excelBytes;
     }
 }
