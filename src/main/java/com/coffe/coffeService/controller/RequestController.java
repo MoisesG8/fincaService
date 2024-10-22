@@ -131,8 +131,15 @@ public class RequestController {
 
     @PostMapping("/addPlanificacion")
     public ResponseEntity<?> agregarPlanificacion(@RequestBody PlanificacionDTO planificacionDTO) {
-        Planificacion nuevaPlanificacion = fincaService.crearPlanificacion(planificacionDTO);
-        return ResponseEntity.ok("Planificacion creada con exito: " + nuevaPlanificacion.getActividad());
+        Map<String, String> response = new HashMap<>();
+        try {
+            Planificacion nuevaPlanificacion = fincaService.crearPlanificacion(planificacionDTO);
+            response.put("estado", "exito");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("estado", "error");
+            return ResponseEntity.ok(response);
+        }
     }
 
     @PostMapping("/addCultivo")
@@ -150,8 +157,15 @@ public class RequestController {
 
     @PostMapping("/addInventario")
     public ResponseEntity<?> agregarInventario(@RequestBody InventarioDTO inventarioDTO) {
-        Inventario inventario = fincaService.crearInventario(inventarioDTO);
-        return ResponseEntity.ok("Inventario creado con exito");
+        Map<String, String> response = new HashMap<>();
+        try {
+            Inventario inventario = fincaService.crearInventario(inventarioDTO);
+            response.put("estado", "exito");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("estado", "error");
+            return ResponseEntity.ok(response);
+        }
     }
 
     @GetMapping("/getInventarioXFinca/{fincaId}")
