@@ -354,4 +354,9 @@ public class RequestController {
             return ResponseEntity.ok(response);
         }
     }
+
+    @GetMapping("/saludo")
+    public ResponseEntity<?> saludo(){
+        return ResponseEntity.ok("saludo desde el backend");
+    }
 }
